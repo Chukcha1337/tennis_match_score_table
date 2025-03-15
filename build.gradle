@@ -1,0 +1,80 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group = 'com.chuckcha'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Hibernate
+    implementation 'org.hibernate:hibernate-core:6.6.1.Final'
+
+    // Servlets
+    implementation 'jakarta.servlet:jakarta.servlet-api:6.1.0'
+    implementation 'org.glassfish.jersey.containers:jersey-container-servlet:4.0.0-M1'
+
+    // Хикари
+    implementation 'com.zaxxer:HikariCP:6.2.1'
+
+    // Jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+
+    // H2 Database
+    implementation 'com.h2database:h2:2.2.224'
+
+    // JSON
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+
+    // Валидация
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+    implementation 'org.glassfish:jakarta.el:4.0.2'
+    implementation 'org.hibernate.validator:hibernate-validator-annotation-processor:8.0.1.Final'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+    testCompileOnly 'org.projectlombok:lombok:1.18.36'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    compileOnly 'org.apache.tomcat:tomcat-servlet-api:10.0.7'
+
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.2'
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
+
+
+
+
+    // Логирование
+//    implementation 'ch.qos.logback:logback-classic:1.4.14'
+
+    // Тесты
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0-M2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0-M2'
+    testImplementation 'org.assertj:assertj-core:3.26.3'
+    testImplementation 'com.h2database:h2:2.2.224'
+
+}
+war {
+    archiveBaseName = 'scoretable'
+    webAppDirName = 'src/main/webapp'
+}
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test).configureEach {
+    systemProperty 'file.encoding', 'UTF-8'
+}
+
+tasks.withType(JavaExec).configureEach {
+    systemProperty 'file.encoding', 'UTF-8'
+}
+
+test {
+    useJUnitPlatform()
+}
