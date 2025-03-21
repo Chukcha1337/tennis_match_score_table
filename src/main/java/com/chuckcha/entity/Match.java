@@ -18,13 +18,18 @@ public class Match implements BaseEntity<Integer> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Player1")
-    private Player player1;
+    private Player firstPlayer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Player2")
-    private Player player2;
+    private Player secondPlayer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Winner")
     private Player winner;
+
+    public Match(Player firstPlayer, Player secondPlayer) {
+        this.firstPlayer = firstPlayer;
+        this.secondPlayer = secondPlayer;
+    }
 }

@@ -134,6 +134,18 @@ footer {
     align-items: center;
 }
 
+.cup-image {
+    background-position: center;
+    width: 100px; /* Ширина кубка */
+    height: 100px; /* Высота кубка */
+    object-fit: contain; /* Сохраняет пропорции изображения */
+}
+
+.centered-cell {
+    text-align: center; /* Центрирует содержимое ячейки по горизонтали */
+    vertical-align: middle; /* Центрирует содержимое ячейки по вертикали */
+}
+
 .view-results, .start-match {
     border-radius: 23px;
     cursor: pointer;
@@ -224,7 +236,7 @@ footer {
 .current-match-image {
     border-radius: 30px;
     margin-top: 20px;
-    background-image: url('../images/scorekeeper.png');
+    /*background-image: url('../images/scorekeeper.png');*/
     background-position: center;
     min-height: 30vh;
     background-size: cover;

@@ -1,30 +1,34 @@
 package com.chuckcha.service;
 
-import com.chuckcha.entity.CurrentMatch;
-import com.chuckcha.entity.Player;
+import com.chuckcha.entity.Match;
+import com.chuckcha.entity.MatchScore;
+import org.hibernate.SessionFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class OngoingMatchesService {
+public class OngoingMatchesService implements Service{
 
-    private static final OngoingMatchesService INSTANCE = new OngoingMatchesService();
-    private final Map<UUID, CurrentMatch> currentMatches = new HashMap<>();
+    private final SessionFactory sessionFactory;
 
-    public void addNewMatch(UUID uuid, CurrentMatch currentMatch) {
-        currentMatches.put(uuid, currentMatch);
+    public OngoingMatchesService(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
-    public CurrentMatch getCurrentMatch(UUID uuid) {
+    private final Map<String, MatchScore> currentMatches = new ConcurrentHashMap<>();
+
+    public String addNewMatch(MatchScore matchScore) {
+        String uuid = UUID.randomUUID().toString();
+        currentMatches.put(uuid, matchScore);
+        return uuid;
+    }
+
+    public MatchScore getCurrentMatch(String uuid) {
         return currentMatches.get(uuid);
     }
 
-    public void removeCurrentMatch(UUID uuid) {
+    public void removeCurrentMatch(String uuid) {
         currentMatches.remove(uuid);
-    }
-
-    public static OngoingMatchesService getInstance() {
-        return INSTANCE;
     }
 }

@@ -41,9 +41,9 @@
                 <form method="post" action="${pageContext.request.contextPath}/new-match">
 <%--                    <p style="color: red;">Sample error message</p>--%>
                     <label class="label-player" for="player1">Player one</label>
-                    <input id="player1" input class="input-player" placeholder="Name" type="text" required title="Enter a name">
+                    <input id="player1" name="player1" input class="input-player" placeholder="Name" type="text" required title="Enter a name">
                     <label class="label-player" for="player2">Player two</label>
-                    <input id="player2" input class="input-player" placeholder="Name" type="text" required title="Enter a name">
+                    <input id="player2" name="player2" input class="input-player" placeholder="Name" type="text" required title="Enter a name">
                     <input class="form-button" type="submit" value="Start">
                 </form>
             </div>

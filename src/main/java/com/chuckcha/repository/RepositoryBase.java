@@ -2,6 +2,7 @@ package com.chuckcha.repository;
 
 import com.chuckcha.entity.BaseEntity;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +34,17 @@ public abstract class RepositoryBase<K extends Serializable, E extends BaseEntit
 
     public Optional<E> findById(K id, Map<String, Object> properties) {
         return Optional.ofNullable(entityManager.find(entityClass, id, properties));
+    }
+
+    public Optional<E> findByName (String name) {
+        String hql = "select p from Player p where p.name = :name";
+        try {
+            return Optional.ofNullable(entityManager.createQuery(hql, entityClass)
+                    .setParameter("name", name)
+                    .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     public List<E> findAll() {

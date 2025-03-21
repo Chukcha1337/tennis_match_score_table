@@ -1,6 +1,8 @@
 package com.chuckcha.config;
 
 //import com.chuckcha.util.ScriptReader;
+import com.chuckcha.entity.Match;
+import com.chuckcha.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
@@ -21,34 +23,31 @@ public final class ApplicationInitializer implements ServletContextListener {
     @SneakyThrows
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        DatabaseConfig.loadProperties();
+//        DatabaseConfig.loadProperties();
 //        ScriptReader.executeInitScripts();
         ServletContext context = sce.getServletContext();
         ObjectMapper objectMapper = new ObjectMapper();
+        Configuration configuration = new Configuration();
+        configuration.configure("hibernate.cfg.xml");
+        SessionFactory sessionFactory = configuration.buildSessionFactory();
+        PlayerService playerService = new PlayerService(sessionFactory);
+        OngoingMatchesService ongoingMatchesService = new OngoingMatchesService(sessionFactory);
+        NewMatchService newMatchService = new NewMatchService(sessionFactory, ongoingMatchesService, playerService);
+        FinishedMatchesPersistenceService finishedMatchesPersistenceService = new FinishedMatchesPersistenceService(sessionFactory);
+        MatchScoreCalculationService matchScoreCalculationService = new MatchScoreCalculationService();
 
         context.setAttribute("objectMapper", objectMapper);
-//        context.setAttribute("currencyService", currencyService);
-//        context.setAttribute("exchangeService", exchangeService);
-    }
-
-    public static SessionFactory buildSessionFactory() {
-        Configuration configuration = buildConfiguration();
-
-        SessionFactory sessionFactory = configuration.buildSessionFactory();
-//        registerListeners(sessionFactory);
-
-        return sessionFactory;
-    }
-
-    public static Configuration buildConfiguration() {
-        Configuration configuration = new Configuration();
-        return configuration;
+        context.setAttribute("sessionFactory", sessionFactory);
+        context.setAttribute("ongoingMatchesService", ongoingMatchesService);
+        context.setAttribute("newMatchService", newMatchService);
+        context.setAttribute("finishedMatchesPersistenceService", finishedMatchesPersistenceService);
+        context.setAttribute("matchScoreCalculationService", matchScoreCalculationService);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
 //        ScriptReader.executeDeleteScripts();
-        DatabaseConfig.closeDataSource();
+//        DatabaseConfig.closeDataSource();
         try {
             Driver driver = DriverManager.getDriver("jdbc:postgresql://");
             DriverManager.deregisterDriver(driver);
