@@ -3,7 +3,7 @@ package com.chuckcha.service;
 import com.chuckcha.entity.Match;
 import com.chuckcha.entity.MatchScore;
 import com.chuckcha.repository.MatchRepository;
-import org.hibernate.Session;
+import jakarta.persistence.EntityManager;
 import org.hibernate.SessionFactory;
 
 public class FinishedMatchesPersistenceService implements Service{
@@ -15,15 +15,15 @@ public class FinishedMatchesPersistenceService implements Service{
     }
 
     public void save(MatchScore matchScore) {
-        Session session = sessionFactory.getCurrentSession();
-        MatchRepository matchRepository = new MatchRepository(session);
-        session.beginTransaction();
+        EntityManager entityManager = sessionFactory.getCurrentSession();
+        entityManager.getTransaction().begin();
+        MatchRepository matchRepository = new MatchRepository(entityManager);
         Match match = Match.builder()
                 .firstPlayer(matchScore.getFirstPlayer())
                 .secondPlayer(matchScore.getSecondPlayer())
                 .winner(matchScore.getWinner())
                 .build();
         matchRepository.save(match);
-        session.getTransaction().commit();
+        entityManager.getTransaction().commit();
     }
 }

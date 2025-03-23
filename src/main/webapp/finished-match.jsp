@@ -43,9 +43,9 @@
 				<tr>
 					<th></th>
 					<th class="table-text">Player</th>
-					<th class="table-text">1 Set</th>
-					<th class="table-text">2 Set</th>
-					<th class="table-text">3 Set</th>
+					<c:forEach var="sets" begin="1" end="${requestScope.match.setsNumber}">
+						<th class="table-text">${sets} Set</th>
+					</c:forEach>
 				</tr>
 				</thead>
 				<tbody>
@@ -61,8 +61,9 @@
 						</c:otherwise>
 					</c:choose>
 					<td class="table-text">${requestScope.match.firstPlayer.name}</td>
-					<td class="table-text">${requestScope.match.getPlayerSets(requestScope.match.firstPlayer.id)}</td>
-					<td class="table-text">${requestScope.match.getPlayerGames(requestScope.match.firstPlayer.id)}</td>
+					<c:forEach var="sets" begin="1" end="${requestScope.match.setsNumber}">
+						<td class="table-text">${requestScope.match.getSetResults(sets,requestScope.match.firstPlayer.id)}</td>
+					</c:forEach>
 				</tr>
 				<tr class="player2">
 					<c:choose>
@@ -76,8 +77,9 @@
 						</c:otherwise>
 					</c:choose>
 					<td class="table-text">${requestScope.match.secondPlayer.name}</td>
-					<td class="table-text">${requestScope.match.getPlayerSets(requestScope.match.secondPlayer.id)}</td>
-					<td class="table-text">${requestScope.match.getPlayerGames(requestScope.match.secondPlayer.id)}</td>
+					<c:forEach var="sets" begin="1" end="${requestScope.match.setsNumber}">
+						<td class="table-text">${requestScope.match.getSetResults(sets,requestScope.match.secondPlayer.id)}</td>
+					</c:forEach>
 				</tr>
 				</tbody>
 			</table>

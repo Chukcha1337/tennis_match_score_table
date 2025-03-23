@@ -3,6 +3,13 @@ package com.chuckcha.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+@NamedEntityGraph(name = "WithPlayers",
+        attributeNodes = {
+        @NamedAttributeNode("firstPlayer"),
+        @NamedAttributeNode("secondPlayer"),
+        @NamedAttributeNode("winner")
+        }
+)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

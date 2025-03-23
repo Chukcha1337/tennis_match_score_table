@@ -1,11 +1,8 @@
 package com.chuckcha.servlets;
 
-
-import com.chuckcha.service.MatchScoreCalculationService;
+import com.chuckcha.exceptions.ValidationException;
 import com.chuckcha.service.NewMatchService;
-import com.chuckcha.service.OngoingMatchesService;
 import com.chuckcha.util.JspHelper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @WebServlet("/new-match")
 public class NewMatchServlet extends HttpServlet {
@@ -34,11 +30,15 @@ public class NewMatchServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-       String player1name = req.getParameter("player1");
-       String player2name = req.getParameter("player2");
-
-       //TODO: validate
-        String uuid = newMatchService.createNewMatch(player1name, player2name);
-        resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + uuid);
+        String player1name = req.getParameter("player1");
+        String player2name = req.getParameter("player2");
+        String uuid = "";
+        try {
+            uuid = newMatchService.createNewMatch(player1name, player2name);
+            resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + uuid);
+        } catch (ValidationException e) {
+            req.setAttribute("errors", e.getErrors());
+            req.getRequestDispatcher(JspHelper.getPath("new-match")).forward(req, resp);
+        }
     }
 }

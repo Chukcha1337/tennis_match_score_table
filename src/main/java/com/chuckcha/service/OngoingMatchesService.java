@@ -1,20 +1,14 @@
 package com.chuckcha.service;
 
-import com.chuckcha.entity.Match;
 import com.chuckcha.entity.MatchScore;
-import org.hibernate.SessionFactory;
+import lombok.NoArgsConstructor;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@NoArgsConstructor
 public class OngoingMatchesService implements Service{
-
-    private final SessionFactory sessionFactory;
-
-    public OngoingMatchesService(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     private final Map<String, MatchScore> currentMatches = new ConcurrentHashMap<>();
 

@@ -1,9 +1,8 @@
 package com.chuckcha.config;
 
 //import com.chuckcha.util.ScriptReader;
-import com.chuckcha.entity.Match;
 import com.chuckcha.service.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.chuckcha.util.ScriptReader;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -23,25 +22,27 @@ public final class ApplicationInitializer implements ServletContextListener {
     @SneakyThrows
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-//        DatabaseConfig.loadProperties();
-//        ScriptReader.executeInitScripts();
         ServletContext context = sce.getServletContext();
-        ObjectMapper objectMapper = new ObjectMapper();
         Configuration configuration = new Configuration();
         configuration.configure("hibernate.cfg.xml");
         SessionFactory sessionFactory = configuration.buildSessionFactory();
+        ScriptReader scriptReader = new ScriptReader(sessionFactory);
+        scriptReader.executeInitScripts();
         PlayerService playerService = new PlayerService(sessionFactory);
-        OngoingMatchesService ongoingMatchesService = new OngoingMatchesService(sessionFactory);
-        NewMatchService newMatchService = new NewMatchService(sessionFactory, ongoingMatchesService, playerService);
+        MatchesService matchesService = new MatchesService(sessionFactory);
+        ValidatorService validatorService = new ValidatorService();
+        OngoingMatchesService ongoingMatchesService = new OngoingMatchesService();
+        NewMatchService newMatchService = new NewMatchService(ongoingMatchesService, playerService);
         FinishedMatchesPersistenceService finishedMatchesPersistenceService = new FinishedMatchesPersistenceService(sessionFactory);
-        MatchScoreCalculationService matchScoreCalculationService = new MatchScoreCalculationService();
+        MatchScoreCalculationService matchScoreCalculationService = new MatchScoreCalculationService(validatorService);
 
-        context.setAttribute("objectMapper", objectMapper);
         context.setAttribute("sessionFactory", sessionFactory);
         context.setAttribute("ongoingMatchesService", ongoingMatchesService);
         context.setAttribute("newMatchService", newMatchService);
         context.setAttribute("finishedMatchesPersistenceService", finishedMatchesPersistenceService);
         context.setAttribute("matchScoreCalculationService", matchScoreCalculationService);
+        context.setAttribute("matchesService", matchesService);
+        context.setAttribute("validatorService", validatorService);
     }
 
     @Override

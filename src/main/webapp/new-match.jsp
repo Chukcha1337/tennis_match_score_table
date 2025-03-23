@@ -38,11 +38,15 @@
             <div class="new-match-image" style="background-image: url('${pageContext.request.contextPath}/images/racket.png');">
             </div>
             <div class="form-container center">
+                <c:if test="${not empty requestScope.errors}">
+                    <c:forEach items="${requestScope.errors}" var="error">
+                        <p style="color: red;">${error}</p>
+                    </c:forEach>
+                </c:if>
                 <form method="post" action="${pageContext.request.contextPath}/new-match">
-<%--                    <p style="color: red;">Sample error message</p>--%>
-                    <label class="label-player" for="player1">Player one</label>
+                    <label class="label-player" for="player1">Player 1</label>
                     <input id="player1" name="player1" input class="input-player" placeholder="Name" type="text" required title="Enter a name">
-                    <label class="label-player" for="player2">Player two</label>
+                    <label class="label-player" for="player2">Player 2</label>
                     <input id="player2" name="player2" input class="input-player" placeholder="Name" type="text" required title="Enter a name">
                     <input class="form-button" type="submit" value="Start">
                 </form>

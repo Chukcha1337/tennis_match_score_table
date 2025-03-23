@@ -1,73 +1,48 @@
 package com.chuckcha.util;
 
-import java.util.Currency;
+import com.chuckcha.exceptions.ValidationException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class DataValidator {
 
     private DataValidator() {
     }
 
-    public static void validateCurrency(String name, String code, String sign) {
-        if (doValuesHaveNull(name, code, sign)) {
-            throw new IllegalArgumentException("One or many values are null");
-        } else if (isCurrencyInvalid(name, code, sign)) {
-            throw new IllegalArgumentException("One or many values are invalid");
-        }
-    }
+    public static void validatePlayersNames(List<String> names) throws ValidationException {
+        List<String> errors = new ArrayList<>();
 
-    public static void validatePath(String path) {
-        if (path == null || path.equals("/")) {
-            throw new IllegalArgumentException("There's no currency code at this URL");
-        }
-    }
+        for (int i = 0; i < names.size(); i++) {
+            String currentName = names.get(i);
+            int playerIndex = i + 1;
 
-    public static void validateExchangeRate(String baseCurrencyCode,String targetCurrencyCode, String rate) {
-        if (doValuesHaveNull(baseCurrencyCode, targetCurrencyCode, rate)) {
-            throw new IllegalArgumentException("One or many values are null");
-        } else if (isRateInvalid(baseCurrencyCode, targetCurrencyCode) || baseCurrencyCode.equals(targetCurrencyCode) || Double.parseDouble(rate) <= 0) {
-            throw new IllegalArgumentException("One or many values are invalid");
+            if (currentName.isEmpty()) {
+                errors.add("Player %d name is empty".formatted(playerIndex));
+            }
+            if (!currentName.matches("[а-яА-ЯёЁa-zA-Z\\s-]+")) {
+                errors.add("Player %d name contains forbidden characters, please, use only letters or (-)".formatted(playerIndex));
+            }
+            if (currentName.charAt(0) == ' ' || currentName.charAt(0) == '-') {
+                errors.add("Player %d name must begin with letter".formatted(playerIndex));
+            }
+            if (currentName.contains("--") || currentName.contains("  ")) {
+                errors.add("Player %d name contains forbidden amount of sequential characters, please, use only letters or (-)".formatted(playerIndex));
+            }
+            if (currentName.length() > 30) {
+                errors.add("Player %d name is too long".formatted(playerIndex));
+            }
+            if (currentName.length() < 4) {
+                errors.add("Player %d name is too short".formatted(playerIndex));
+            }
         }
-    }
 
-    public static void validateExchangeRate(String rate) {
-        if (doValuesHaveNull(rate)) {
-            throw new IllegalArgumentException("Rate is null");
-        } else if (Double.parseDouble(rate) <= 0) {
-            throw new IllegalArgumentException("One or many values are invalid");
+        if (names.getFirst().equalsIgnoreCase(names.getLast())) {
+            errors.add("Players names should be unique");
         }
-    }
 
-    public static void validateBody(String body) {
-        if (doValuesHaveNull(body)) {
-            throw new IllegalArgumentException("Body is null");
-        } else if (!body.contains("rate")) {
-            throw new IllegalArgumentException("There is no rate at body");
-        }
-    }
-
-    private static boolean isCurrencyInvalid(String name, String code, String sign) {
-        try {
-            Currency currency = Currency.getInstance(code);
-            return currency == null || !currency.getDisplayName().equals(name) || !currency.getSymbol().equals(sign);
-        } catch (IllegalArgumentException e) {
-            return true;
-        }
-    }
-
-    private static boolean doValuesHaveNull(String... values) {
-        for (String value : values) {
-            if (value == null) return true;
-        }
-        return false;
-    }
-
-    private static boolean isRateInvalid(String baseCurrencyCode, String targetCurrencyCode) {
-        try {
-            Currency baseCurrency = Currency.getInstance(baseCurrencyCode);
-            Currency targetCurrency = Currency.getInstance(targetCurrencyCode);
-            return (baseCurrency == null || targetCurrency == null || baseCurrencyCode.equals(targetCurrencyCode));
-        } catch (IllegalArgumentException e) {
-            return true;
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
         }
     }
 }

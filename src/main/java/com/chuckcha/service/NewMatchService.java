@@ -1,28 +1,26 @@
 package com.chuckcha.service;
 
-import com.chuckcha.entity.Match;
 import com.chuckcha.entity.MatchScore;
 import com.chuckcha.entity.Player;
-import org.hibernate.SessionFactory;
+import com.chuckcha.exceptions.ValidationException;
+import com.chuckcha.util.DataValidator;
 
 import java.util.List;
-import java.util.UUID;
 
 
-public class NewMatchService {
+public class NewMatchService implements Service {
 
-    private final SessionFactory sessionFactory;
     private final OngoingMatchesService ongoingMatchesService;
     private final PlayerService playerService;
 
-    public NewMatchService(SessionFactory sessionFactory, OngoingMatchesService ongoingMatchesService, PlayerService playerService) {
-        this.sessionFactory = sessionFactory;
+    public NewMatchService(OngoingMatchesService ongoingMatchesService, PlayerService playerService) {
         this.ongoingMatchesService = ongoingMatchesService;
         this.playerService = playerService;
     }
 
-    public String createNewMatch(String player1name, String player2name) {
-        List<Player> players = playerService.checkOrCreatePlayers(player1name, player2name);
+    public String createNewMatch(String firstPlayerName, String secondPlayerName) throws ValidationException {
+        DataValidator.validatePlayersNames(List.of(firstPlayerName, secondPlayerName));
+        List<Player> players = playerService.checkOrCreatePlayers(firstPlayerName, secondPlayerName);
         Player playerOne = players.getFirst();
         Player playerTwo = players.getLast();
         MatchScore matchScore = new MatchScore(playerOne, playerTwo);

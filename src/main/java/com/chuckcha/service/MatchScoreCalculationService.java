@@ -9,13 +9,18 @@ public class MatchScoreCalculationService implements Service {
     private static final int POINTS_TO_WIN = 4;
     private static final int TIE_BREAK_POINTS_TO_WIN = 7;
     private static final int MIN_DIFFERENCE = 2;
+    private final ValidatorService validatorService;
+
+    public MatchScoreCalculationService(ValidatorService validatorService) {
+        this.validatorService = validatorService;
+    }
 
     public void updateScore(MatchScore matchScore, String pointWinnerIdString) {
-        int pointWinnerId = Integer.parseInt(pointWinnerIdString);
+        int pointWinnerId = validatorService.validateId(pointWinnerIdString);
         int pointLoserId = matchScore.getOpponentId(pointWinnerId);
         if (matchScore.isTieBreak()) {
             calculateIfTieBrake(matchScore, pointWinnerId, pointLoserId);
-        } else calculateIfNoTieBrakes(matchScore, pointWinnerId, pointLoserId);
+        } else calculateIfNoTieBrake(matchScore, pointWinnerId, pointLoserId);
     }
 
     private void calculateIfTieBrake(MatchScore matchScore, int pointWinnerId, int pointLoserId) {
@@ -24,27 +29,11 @@ public class MatchScoreCalculationService implements Service {
         int loserPoints = matchScore.getPlayerPoints(pointLoserId);
         if (winnerPoints >= TIE_BREAK_POINTS_TO_WIN) {
             if (winnerPoints - MIN_DIFFERENCE >= loserPoints) {
+                matchScore.incrementGames(pointWinnerId);
                 calculateSets(matchScore, pointWinnerId);
                 matchScore.setTieBrakeFalse();
             }
         }
-    }
-
-    private void calculateIfNoTieBrake(MatchScore matchScore, int pointWinnerId, int pointLoserId) {
-        int winnerPoints = matchScore.getPlayerPoints(pointWinnerId);
-        int loserPoints = matchScore.getPlayerPoints(pointLoserId);
-        if (isPointsEnoughToWin(winnerPoints, loserPoints)) {
-            int winnerGames = matchScore.getPlayerGames(pointWinnerId);
-            int loserGames = matchScore.getPlayerGames(pointLoserId);
-            if (isGamesEnoughToWin(winnerGames, loserGames)) {
-                calculateSets(matchScore, pointWinnerId);
-            } else if (isTieBreakCondition(winnerGames, loserGames)) {
-                matchScore.incrementGames(pointWinnerId);
-                matchScore.setTieBrakeTrue();
-            } else matchScore.incrementGames(pointWinnerId);
-        } else if (willBeAdvantageDraw(winnerPoints, loserPoints)) {
-            matchScore.decrementPoints(pointLoserId);
-        } else matchScore.incrementPoints(pointWinnerId);
     }
 
     private void calculateSets(MatchScore matchScore, int pointWinnerId) {
@@ -56,39 +45,17 @@ public class MatchScoreCalculationService implements Service {
         }
     }
 
-    private boolean isTieBreakCondition(int winnerGames, int loserGames) {
-        return winnerGames == GAMES_TO_WIN - 1 && loserGames == GAMES_TO_WIN;
-    }
-
-    private boolean isGamesEnoughToWin(int winnerGames, int loserGames) {
-        return (winnerGames == GAMES_TO_WIN - 1 && loserGames <= GAMES_TO_WIN - MIN_DIFFERENCE)
-               || (winnerGames == GAMES_TO_WIN && loserGames == GAMES_TO_WIN - 1);
-    }
-
-    private boolean willBeAdvantageDraw(int winnerPoints, int loserPoints) {
-        return winnerPoints == POINTS_TO_WIN - 1 && loserPoints == POINTS_TO_WIN;
-    }
-
-    private boolean isPointsEnoughToWin(int winnerPoints, int loserPoints) {
-        return (winnerPoints == POINTS_TO_WIN - 1 && loserPoints <= POINTS_TO_WIN - MIN_DIFFERENCE)
-               || (winnerPoints == POINTS_TO_WIN && loserPoints == POINTS_TO_WIN - 1);
-    }
-
-    private boolean isGameFinished(int winnerPoints, int loserPoints) {
-        return winnerPoints >= POINTS_TO_WIN && loserPoints <= POINTS_TO_WIN - MIN_DIFFERENCE;
-    }
-
-    private void calculateIfNoTieBrakes(MatchScore matchScore, int pointWinnerId, int pointLoserId) {
+    private void calculateIfNoTieBrake(MatchScore matchScore, int pointWinnerId, int pointLoserId) {
         matchScore.incrementPoints(pointWinnerId);
         int winnerPoints = matchScore.getPlayerPoints(pointWinnerId);
         int loserPoints = matchScore.getPlayerPoints(pointLoserId);
-        if (isPointsEnoughToWins(winnerPoints, loserPoints)) {
+        if (isPointsEnoughToWin(winnerPoints, loserPoints)) {
             matchScore.incrementGames(pointWinnerId);
             int winnerGames = matchScore.getPlayerGames(pointWinnerId);
             int loserGames = matchScore.getPlayerGames(pointLoserId);
-            if (isGamesEnoughToWins(winnerGames, loserGames)) {
+            if (isGamesEnoughToWin(winnerGames, loserGames)) {
                 calculateSets(matchScore, pointWinnerId);
-            } else if (isTieBreakConditions(winnerGames, loserGames)) {
+            } else if (isTieBreakCondition(winnerGames, loserGames)) {
                 matchScore.setTieBrakeTrue();
             }
         } else if (isItAdvantageDraw(winnerPoints, loserPoints)) {
@@ -97,11 +64,11 @@ public class MatchScoreCalculationService implements Service {
         }
     }
 
-    private boolean isPointsEnoughToWins(int winnerPoints, int loserPoints) {
+    private boolean isPointsEnoughToWin(int winnerPoints, int loserPoints) {
         return (winnerPoints >= POINTS_TO_WIN && loserPoints <= winnerPoints - MIN_DIFFERENCE);
     }
 
-    private boolean isGamesEnoughToWins(int winnerGames, int loserGames) {
+    private boolean isGamesEnoughToWin(int winnerGames, int loserGames) {
         return (winnerGames >= GAMES_TO_WIN && loserGames <= winnerGames - MIN_DIFFERENCE);
     }
 
@@ -109,7 +76,24 @@ public class MatchScoreCalculationService implements Service {
         return winnerPoints == POINTS_TO_WIN && loserPoints == POINTS_TO_WIN;
     }
 
-    private boolean isTieBreakConditions(int winnerGames, int loserGames) {
+    private boolean isTieBreakCondition(int winnerGames, int loserGames) {
         return winnerGames == GAMES_TO_WIN && loserGames == GAMES_TO_WIN;
     }
+
+    public int getSetsToWin() {
+        return SETS_TO_WIN;
+    }
+    public int getTieBreakPointsToWin() {
+        return TIE_BREAK_POINTS_TO_WIN;
+    }
+    public int getGamesToWin() {
+        return GAMES_TO_WIN;
+    }
+    public int getPointsToWin() {
+        return POINTS_TO_WIN;
+    }
+    public int getMinDifference() {
+        return MIN_DIFFERENCE;
+    }
+
 }

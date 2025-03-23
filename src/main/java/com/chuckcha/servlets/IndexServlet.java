@@ -1,10 +1,5 @@
 package com.chuckcha.servlets;
 
-import com.chuckcha.service.MatchScoreCalculationService;
-import com.chuckcha.service.NewMatchService;
-import com.chuckcha.service.OngoingMatchesService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
