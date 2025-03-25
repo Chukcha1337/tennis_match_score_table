@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RunnerTest {
 
-    private static final MatchScoreCalculationService MATCH_SCORE_CALCULATION_SERVICE = new MatchScoreCalculationService(new ValidatorService());
+    private static final MatchScoreCalculationService MATCH_SCORE_CALCULATION_SERVICE = new MatchScoreCalculationService();
     private static final int SETS_TO_WIN = MATCH_SCORE_CALCULATION_SERVICE.getSetsToWin();
     private static final int GAMES_TO_WIN = MATCH_SCORE_CALCULATION_SERVICE.getGamesToWin();
     private static final int POINTS_TO_WIN = MATCH_SCORE_CALCULATION_SERVICE.getPointsToWin();

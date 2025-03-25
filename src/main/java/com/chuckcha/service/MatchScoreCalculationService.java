@@ -1,6 +1,7 @@
 package com.chuckcha.service;
 
 import com.chuckcha.entity.MatchScore;
+import com.chuckcha.exceptions.BadRequestException;
 
 public class MatchScoreCalculationService implements Service {
 
@@ -9,14 +10,17 @@ public class MatchScoreCalculationService implements Service {
     private static final int POINTS_TO_WIN = 4;
     private static final int TIE_BREAK_POINTS_TO_WIN = 7;
     private static final int MIN_DIFFERENCE = 2;
-    private final ValidatorService validatorService;
 
-    public MatchScoreCalculationService(ValidatorService validatorService) {
-        this.validatorService = validatorService;
+    public MatchScoreCalculationService() {
     }
 
     public void updateScore(MatchScore matchScore, String pointWinnerIdString) {
-        int pointWinnerId = validatorService.validateId(pointWinnerIdString);
+        int pointWinnerId;
+        try {
+            pointWinnerId = Integer.parseInt(pointWinnerIdString);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("Invalid id: " + pointWinnerIdString);
+        }
         int pointLoserId = matchScore.getOpponentId(pointWinnerId);
         if (matchScore.isTieBreak()) {
             calculateIfTieBrake(matchScore, pointWinnerId, pointLoserId);

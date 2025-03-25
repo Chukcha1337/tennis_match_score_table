@@ -31,18 +31,17 @@ public final class ApplicationInitializer implements ServletContextListener {
         PlayerService playerService = new PlayerService(sessionFactory);
         MatchesService matchesService = new MatchesService(sessionFactory);
         ValidatorService validatorService = new ValidatorService();
-        OngoingMatchesService ongoingMatchesService = new OngoingMatchesService();
-        NewMatchService newMatchService = new NewMatchService(ongoingMatchesService, playerService);
         FinishedMatchesPersistenceService finishedMatchesPersistenceService = new FinishedMatchesPersistenceService(sessionFactory);
-        MatchScoreCalculationService matchScoreCalculationService = new MatchScoreCalculationService(validatorService);
+        OngoingMatchesService ongoingMatchesService = new OngoingMatchesService();
+        MatchScoreCalculationService matchScoreCalculationService = new MatchScoreCalculationService();
 
         context.setAttribute("sessionFactory", sessionFactory);
         context.setAttribute("ongoingMatchesService", ongoingMatchesService);
-        context.setAttribute("newMatchService", newMatchService);
         context.setAttribute("finishedMatchesPersistenceService", finishedMatchesPersistenceService);
         context.setAttribute("matchScoreCalculationService", matchScoreCalculationService);
         context.setAttribute("matchesService", matchesService);
         context.setAttribute("validatorService", validatorService);
+        context.setAttribute("playerService", playerService);
     }
 
     @Override

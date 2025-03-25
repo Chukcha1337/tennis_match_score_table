@@ -1,6 +1,7 @@
 package com.chuckcha.service;
 
 import com.chuckcha.entity.MatchScore;
+import com.chuckcha.entity.Player;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
@@ -12,8 +13,9 @@ public class OngoingMatchesService implements Service{
 
     private final Map<String, MatchScore> currentMatches = new ConcurrentHashMap<>();
 
-    public String addNewMatch(MatchScore matchScore) {
+    public String createNewMatch(Player firstPlayer, Player secondPlayer) {
         String uuid = UUID.randomUUID().toString();
+        MatchScore matchScore = new MatchScore(firstPlayer, secondPlayer);
         currentMatches.put(uuid, matchScore);
         return uuid;
     }

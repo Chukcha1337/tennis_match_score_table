@@ -1,7 +1,11 @@
 package com.chuckcha.servlets;
 
+import com.chuckcha.entity.MatchScore;
+import com.chuckcha.entity.Player;
 import com.chuckcha.exceptions.ValidationException;
-import com.chuckcha.service.NewMatchService;
+import com.chuckcha.service.OngoingMatchesService;
+import com.chuckcha.service.PlayerService;
+import com.chuckcha.service.ValidatorService;
 import com.chuckcha.util.JspHelper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
@@ -11,15 +15,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/new-match")
 public class NewMatchServlet extends HttpServlet {
 
-    private NewMatchService newMatchService;
+    private PlayerService playerService;
+    private OngoingMatchesService ongoingMatchesService;
+    private ValidatorService validatorService;
 
     @Override
     public void init(ServletConfig config) {
-        newMatchService = (NewMatchService) config.getServletContext().getAttribute("newMatchService");
+        playerService = (PlayerService) config.getServletContext().getAttribute("playerService");
+        ongoingMatchesService = (OngoingMatchesService) config.getServletContext().getAttribute("ongoingMatchesService");
+        validatorService = (ValidatorService) config.getServletContext().getAttribute("validatorService");
     }
 
     @Override
@@ -30,11 +39,14 @@ public class NewMatchServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        String player1name = req.getParameter("player1");
-        String player2name = req.getParameter("player2");
-        String uuid = "";
+        String firstPlayerName = req.getParameter("player1");
+        String secondPlayerName = req.getParameter("player2");
         try {
-            uuid = newMatchService.createNewMatch(player1name, player2name);
+            validatorService.validatePlayersNames(List.of(firstPlayerName, secondPlayerName));
+            List<Player> players = playerService.checkOrCreatePlayers(firstPlayerName, secondPlayerName);
+            Player firstPlayer = players.getFirst();
+            Player secondPlayer = players.getLast();
+            String uuid = ongoingMatchesService.createNewMatch(firstPlayer, secondPlayer);
             resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + uuid);
         } catch (ValidationException e) {
             req.setAttribute("errors", e.getErrors());

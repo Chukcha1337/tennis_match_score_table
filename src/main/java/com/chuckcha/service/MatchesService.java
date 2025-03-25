@@ -4,7 +4,7 @@ import com.chuckcha.dto.MatchDto;
 import com.chuckcha.entity.Match;
 import com.chuckcha.entity.Page;
 import com.chuckcha.repository.MatchRepository;
-import org.hibernate.Session;
+import jakarta.persistence.EntityManager;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
@@ -18,10 +18,10 @@ public class MatchesService implements Service {
     }
 
     public Page get(String name, int page, int pageSize) {
-        Session session = sessionFactory.getCurrentSession();
-        MatchRepository matchRepository = new MatchRepository(session);
+        EntityManager entityManager = sessionFactory.getCurrentSession();
+        MatchRepository matchRepository = new MatchRepository(entityManager);
         int offset = (page - 1) * pageSize;
-        session.beginTransaction();
+        entityManager.getTransaction().begin();
         List<Match> byNamePaginated;
         Long rowsAmount;
         if (name == null || name.isEmpty()) {
@@ -39,7 +39,7 @@ public class MatchesService implements Service {
                 .build()).toList();
         int result = (int) Math.ceil((double) rowsAmount / pageSize);
         Page currentPage = new Page(matchDtos, result);
-        session.getTransaction().commit();
+        entityManager.getTransaction().commit();
         return currentPage;
     }
 }

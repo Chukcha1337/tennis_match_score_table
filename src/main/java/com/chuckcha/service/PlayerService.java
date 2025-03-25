@@ -2,7 +2,7 @@ package com.chuckcha.service;
 
 import com.chuckcha.entity.Player;
 import com.chuckcha.repository.PlayerRepository;
-import org.hibernate.Session;
+import jakarta.persistence.EntityManager;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
@@ -16,33 +16,26 @@ public class PlayerService implements Service {
         this.sessionFactory = sessionFactory;
     }
 
-    public List<Player> checkOrCreatePlayers(String playerOneName, String playerTwoName) {
-        Session session = sessionFactory.getCurrentSession();
-
-        Player currentPlayerOne;
-        Player currentPlayerTwo;
-
-        session.beginTransaction();
-        PlayerRepository playerRepository = new PlayerRepository(session);
-
-        Optional<Player> maybePlayer1 = playerRepository.findByName(playerOneName);
-        Optional<Player> maybePlayer2 = playerRepository.findByName(playerTwoName);
-
-        if (maybePlayer1.isPresent()) {
-            currentPlayerOne = maybePlayer1.get();
-        } else {
-            currentPlayerOne = Player.builder().name(playerOneName).build();
-            session.persist(currentPlayerOne);
-        }
-
-        if (maybePlayer2.isPresent()) {
-            currentPlayerTwo = maybePlayer2.get();
-        } else {
-            currentPlayerTwo = Player.builder().name(playerTwoName).build();
-            session.persist(currentPlayerTwo);
-        }
-        session.getTransaction().commit();
-
-        return List.of(currentPlayerOne, currentPlayerTwo);
+    public List<Player> checkOrCreatePlayers(String firstPlayerName, String secondPlayerName) {
+        EntityManager entityManager = sessionFactory.getCurrentSession();
+        entityManager.getTransaction().begin();
+        PlayerRepository playerRepository = new PlayerRepository(entityManager);
+        Player firstPlayer = checkOrCreateOnePlayer(firstPlayerName, playerRepository);
+        Player secondPlayer = checkOrCreateOnePlayer(secondPlayerName, playerRepository);
+        entityManager.getTransaction().commit();
+        return List.of(firstPlayer, secondPlayer);
     }
+
+    private Player checkOrCreateOnePlayer(String playerName, PlayerRepository playerRepository) {
+        Optional<Player> maybePlayer = playerRepository.findByName(playerName);
+        Player player;
+        if (maybePlayer.isPresent()) {
+            player = maybePlayer.get();
+        } else {
+            player = Player.builder().name(playerName).build();
+            playerRepository.save(player);
+        }
+        return player;
+    }
+
 }
