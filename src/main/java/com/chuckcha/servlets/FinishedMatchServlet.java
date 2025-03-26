@@ -3,7 +3,6 @@ package com.chuckcha.servlets;
 import com.chuckcha.entity.MatchScore;
 import com.chuckcha.service.OngoingMatchesService;
 import com.chuckcha.service.ValidatorService;
-import com.chuckcha.util.JspHelper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/finished-match/*")
-public class FinishedMatchController extends HttpServlet {
+public class FinishedMatchServlet extends HttpServlet {
 
     private OngoingMatchesService ongoingMatchesService;
     private ValidatorService validatorService;
