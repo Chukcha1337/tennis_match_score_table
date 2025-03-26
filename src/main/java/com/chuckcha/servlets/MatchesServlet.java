@@ -2,7 +2,6 @@ package com.chuckcha.servlets;
 
 import com.chuckcha.entity.Page;
 import com.chuckcha.service.*;
-import com.chuckcha.util.JspHelper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -29,9 +28,10 @@ public class MatchesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pageParam = req.getParameter("page");
-        int pageNumber = validatorService.validatePageParam(pageParam);
+        int userRequiredPageNumber = validatorService.validatePageParam(pageParam);
         String name = req.getParameter("filter_by_player_name");
-        Page currentPage = matchesService.get(name, pageNumber, DEFAULT_PAGE_SIZE);
+        Page currentPage = matchesService.get(name, userRequiredPageNumber, DEFAULT_PAGE_SIZE);
+        int pageNumber = currentPage.pageNumber();
         req.setAttribute("name", name);
         req.setAttribute("pageNumber", pageNumber);
         req.setAttribute("currentPage", currentPage);

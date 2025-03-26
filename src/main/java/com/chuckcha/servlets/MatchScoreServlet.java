@@ -2,7 +2,6 @@ package com.chuckcha.servlets;
 
 import com.chuckcha.entity.MatchScore;
 import com.chuckcha.service.*;
-import com.chuckcha.util.JspHelper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,14 +16,12 @@ public class MatchScoreServlet extends HttpServlet {
 
     private OngoingMatchesService ongoingMatchesService;
     private MatchScoreCalculationService matchScoreCalculationService;
-    private FinishedMatchesPersistenceService finishedMatchesPersistenceService;
     private ValidatorService validatorService;
 
     @Override
     public void init(ServletConfig config) {
         ongoingMatchesService = (OngoingMatchesService) config.getServletContext().getAttribute("ongoingMatchesService");
         matchScoreCalculationService = (MatchScoreCalculationService) config.getServletContext().getAttribute("matchScoreCalculationService");
-        finishedMatchesPersistenceService = (FinishedMatchesPersistenceService) config.getServletContext().getAttribute("finishedMatchesPersistenceService");
         validatorService = (ValidatorService) config.getServletContext().getAttribute("validatorService");
     }
 
@@ -42,8 +39,8 @@ public class MatchScoreServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String pointWinnerId = req.getParameter("pointWinnerId");
         String uuid = req.getParameter("uuid");
+        String pointWinnerId = req.getParameter("pointWinnerId");
         validatorService.validateUUID(uuid);
         MatchScore matchScore = ongoingMatchesService.getCurrentMatch(uuid);
         validatorService.validateMatchScore(matchScore, uuid);
@@ -52,7 +49,6 @@ public class MatchScoreServlet extends HttpServlet {
         req.setAttribute("uuid", uuid);
         req.setAttribute("match", matchScore);
         if (isGameFinished) {
-            finishedMatchesPersistenceService.save(matchScore);
             resp.sendRedirect(req.getContextPath() + "/finished-match?uuid=" + uuid);
         } else resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + uuid);
     }

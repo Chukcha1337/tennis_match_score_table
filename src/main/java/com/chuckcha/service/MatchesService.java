@@ -18,21 +18,22 @@ public class MatchesService {
         this.sessionFactory = sessionFactory;
     }
 
-    public Page get(String name, int page, int pageSize) {
+    public Page get(String name, int userRequiredPageNumber, int pageSize) {
         EntityManager entityManager = sessionFactory.getCurrentSession();
         MatchRepository matchRepository = new MatchRepository(entityManager);
-        int offset = (page - 1) * pageSize;
         boolean isNameEmpty = (name == null || name.isEmpty());
         entityManager.getTransaction().begin();
-        List<Match> byNamePaginated = isNameEmpty
-                ? matchRepository.findPaginated(offset, pageSize)
-                : matchRepository.findByNamePaginated(name, offset, pageSize);
         Long rowsAmount = isNameEmpty
                 ? matchRepository.getRowsAmount()
                 : matchRepository.getRowsAmount(name);
-        List<MatchDto> matchDtos = byNamePaginated.stream().map(DtoMapper::toDto).toList();
         int result = (int) Math.ceil((double) rowsAmount / pageSize);
-        Page currentPage = new Page(matchDtos, result);
+        int reqPageNumber = Math.min(result, userRequiredPageNumber);
+        int offset = (reqPageNumber - 1) * pageSize;
+        List<Match> byNamePaginated = isNameEmpty
+                ? matchRepository.findPaginated(offset, pageSize)
+                : matchRepository.findByNamePaginated(name, offset, pageSize);
+        List<MatchDto> matchDtos = byNamePaginated.stream().map(DtoMapper::toDto).toList();
+        Page currentPage = new Page(matchDtos, result, reqPageNumber);
         entityManager.getTransaction().commit();
         return currentPage;
     }

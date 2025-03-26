@@ -95,10 +95,10 @@
 			<div class="button-container">
 				<form action="${path}/finished-match" method="post">
 					<input type="hidden" name="uuid" value="${requestScope.uuid}">
-					<button type="submit" class="score-btn">Main menu</button>
+					<button type="submit" class="score-btn">Save and exit match</button>
 				</form>
-				<form action="${path}/new-match">
-					<button type="submit" class="score-btn">New match</button>
+				<form action="${path}/index">
+					<button type="submit" class="score-btn">Left without saving</button>
 				</form>
 			</div>
 		</c:if>

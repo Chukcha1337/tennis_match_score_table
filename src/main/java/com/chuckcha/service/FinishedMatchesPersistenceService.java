@@ -27,7 +27,7 @@ public class FinishedMatchesPersistenceService {
         String secondPlayerName = matchScore.getSecondPlayerScore().getPlayerName();
         Player firstPlayer = playerRepository.findByName(firstPlayerName)
                 .orElseThrow(() -> new DatabaseException("Could not find player with name " + firstPlayerName));
-        Player secondPlayer = playerRepository.findByName(firstPlayerName)
+        Player secondPlayer = playerRepository.findByName(secondPlayerName)
                 .orElseThrow(() -> new DatabaseException("Could not find player with name " + secondPlayerName));
         Player winner;
         if (firstPlayerName.equals(matchScore.getWinnerName())) {
@@ -43,5 +43,4 @@ public class FinishedMatchesPersistenceService {
         matchRepository.save(match);
         entityManager.getTransaction().commit();
     }
-
 }

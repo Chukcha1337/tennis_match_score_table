@@ -5,7 +5,6 @@ import com.chuckcha.exceptions.ValidationException;
 import com.chuckcha.service.OngoingMatchesService;
 import com.chuckcha.service.PlayerService;
 import com.chuckcha.service.ValidatorService;
-import com.chuckcha.util.JspHelper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

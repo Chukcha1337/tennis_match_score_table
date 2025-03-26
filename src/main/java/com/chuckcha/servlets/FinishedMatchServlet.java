@@ -1,6 +1,7 @@
 package com.chuckcha.servlets;
 
 import com.chuckcha.entity.MatchScore;
+import com.chuckcha.service.FinishedMatchesPersistenceService;
 import com.chuckcha.service.OngoingMatchesService;
 import com.chuckcha.service.ValidatorService;
 import jakarta.servlet.ServletConfig;
@@ -17,11 +18,13 @@ public class FinishedMatchServlet extends HttpServlet {
 
     private OngoingMatchesService ongoingMatchesService;
     private ValidatorService validatorService;
+    private FinishedMatchesPersistenceService finishedMatchesPersistenceService;
 
     @Override
     public void init(ServletConfig config) {
         ongoingMatchesService = (OngoingMatchesService) config.getServletContext().getAttribute("ongoingMatchesService");
         validatorService = (ValidatorService) config.getServletContext().getAttribute("validatorService");
+        finishedMatchesPersistenceService = (FinishedMatchesPersistenceService) config.getServletContext().getAttribute("finishedMatchesPersistenceService");
     }
 
     @Override
@@ -37,10 +40,14 @@ public class FinishedMatchServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String uuid = req.getParameter("uuid");
         validatorService.validateUUID(uuid);
-        ongoingMatchesService.removeCurrentMatch(uuid);
+        MatchScore matchScore = ongoingMatchesService.getCurrentMatch(uuid);
+        if (matchScore != null) {
+            finishedMatchesPersistenceService.save(matchScore);
+            ongoingMatchesService.removeCurrentMatch(uuid);
+        }
         resp.sendRedirect(req.getContextPath() + "/index");
     }
 }
