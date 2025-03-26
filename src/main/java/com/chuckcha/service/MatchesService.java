@@ -27,8 +27,8 @@ public class MatchesService {
                 ? matchRepository.getRowsAmount()
                 : matchRepository.getRowsAmount(name);
         int result = (int) Math.ceil((double) rowsAmount / pageSize);
-        int reqPageNumber = Math.min(result, userRequiredPageNumber);
-        int offset = (reqPageNumber - 1) * pageSize;
+        int reqPageNumber = Math.max(1, Math.min(result, userRequiredPageNumber));
+        int offset = Math.max(0, (reqPageNumber - 1) * pageSize);
         List<Match> byNamePaginated = isNameEmpty
                 ? matchRepository.findPaginated(offset, pageSize)
                 : matchRepository.findByNamePaginated(name, offset, pageSize);
