@@ -1,103 +1,86 @@
 package com.chuckcha.entity;
 
+import com.chuckcha.dto.PlayerDto;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
-
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @EqualsAndHashCode
 @ToString
-public class MatchScore extends Match {
+@Getter
+public class MatchScore {
 
-    private Map<Integer, Integer> points;
-    private Map<Integer, Integer> sets;
-    private Map<Integer, Integer> games;
-    private Map<Integer, Map<Integer, Integer>> gamesHistory;
-    private final int firstPlayerId;
-    private final int secondPlayerId;
+    private final PlayerScore firstPlayerScore;
+    private final PlayerScore secondPlayerScore;
+    private final long firstPlayerId;
+    private final long secondPlayerId;
     private boolean isTieBreak;
     private boolean isGameFinished;
+    private String winnerName;
 
-    public MatchScore(Player firstPlayer, Player secondPlayer) {
-        super(firstPlayer, secondPlayer);
-        firstPlayerId = firstPlayer.getId();
-        secondPlayerId = secondPlayer.getId();
+    public MatchScore(PlayerDto firstPlayerDto, PlayerDto secondPlayerDto) {
+        firstPlayerScore = new PlayerScore(firstPlayerDto.id(), firstPlayerDto.name());
+        secondPlayerScore = new PlayerScore(secondPlayerDto.id(), secondPlayerDto.name());
+        firstPlayerId = firstPlayerDto.id();
+        secondPlayerId = secondPlayerDto.id();
         isTieBreak = false;
         isGameFinished = false;
-        initializeScore();
     }
 
-    private void initializeScore() {
-        points = new HashMap<>();
-        sets = new HashMap<>();
-        games = new HashMap<>();
-        gamesHistory = new LinkedHashMap<>();
-        points.put(firstPlayerId, 0);
-        sets.put(firstPlayerId, 0);
-        games.put(firstPlayerId, 0);
-        points.put(secondPlayerId, 0);
-        sets.put(secondPlayerId, 0);
-        games.put(secondPlayerId, 0);
-    }
-
-    public int getOpponentId(int id) {
+    public long getOpponentId(long id) {
         return id == firstPlayerId ? secondPlayerId : firstPlayerId;
     }
 
-    public void incrementPoints(int id) {
-        points.replace(id, points.get(id) + 1);
+    public PlayerScore getPlayerScoreById(long id) {
+        return id == firstPlayerId ? firstPlayerScore : secondPlayerScore;
     }
 
-    public void decrementPoints(int id) {
-        points.replace(id, points.get(id) - 1);
+    public void incrementPoints(long id) {
+        getPlayerScoreById(id).incrementPoints();
     }
 
-    public int getPlayerPoints(int id) {
-        return points.get(id);
+    public void decrementPoints(long id) {
+        getPlayerScoreById(id).decrementPoints();
     }
 
-    public void incrementSets(int id) {
-        sets.replace(id, sets.get(id) + 1);
-        saveSetResults(id);
+    public int getPlayerPoints(long id) {
+        return getPlayerScoreById(id).getPoints();
+    }
+
+    public void incrementSets(long id) {
+        PlayerScore playerScore = getPlayerScoreById(id);
+        PlayerScore opponentScore = getPlayerScoreById(getOpponentId(id));
+        playerScore.incrementSets();
+        saveSetResults(playerScore, opponentScore);
         resetPoints();
         resetGames();
     }
 
     public int getSetsNumber() {
-        return sets.values().stream().mapToInt(Integer::intValue).sum();
+        return firstPlayerScore.getSetPoints() + secondPlayerScore.getSetPoints();
     }
 
-    private void saveSetResults(int id) {
-        int playerGames = getPlayerGames(id);
-        int opponentId = getOpponentId(id);
-        int opponentGames = getPlayerGames(opponentId);
-        Map<Integer, Integer> setResults = new HashMap<>();
-        setResults.put(id, playerGames);
-        setResults.put(opponentId, opponentGames);
-        gamesHistory.put(getPlayerSets(id) + getPlayerSets(opponentId), setResults);
+    private void saveSetResults(PlayerScore playerScore, PlayerScore opponentScore) {
+        int indexOfSet = playerScore.getSetPoints() + opponentScore.getSetPoints();
+        playerScore.saveSetResults(indexOfSet, opponentScore.getGamePoints());
+        opponentScore.saveSetResults(indexOfSet, playerScore.getGamePoints());
     }
 
-    public String getSetResults(int setId, int playerId) {
-        int opponentId = getOpponentId(playerId);
-        Map<Integer, Integer> integerIntegerMap = gamesHistory.get(setId);
-        Integer playerGames = integerIntegerMap.get(playerId);
-        Integer opponentGames = integerIntegerMap.get(opponentId);
-        return "(%d - %d)".formatted(playerGames, opponentGames);
+    public String getSetResults(int indexOfSet, long playerId) {
+        return getPlayerScoreById(playerId).getSetResult(indexOfSet);
     }
 
-    public int getPlayerSets(int id) {
-        return sets.get(id);
+    public int getPlayerSets(long id) {
+        return getPlayerScoreById(id).getSetPoints();
     }
 
-    public void incrementGames(int id) {
+    public void incrementGames(long id) {
+        getPlayerScoreById(id).incrementGames();
         resetPoints();
-        games.replace(id, games.get(id) + 1);
     }
 
-    public int getPlayerGames(int id) {
-        return games.get(id);
+    public int getPlayerGames(long id) {
+        return getPlayerScoreById(id).getGamePoints();
     }
 
     public void setTieBrakeTrue() {
@@ -120,25 +103,23 @@ public class MatchScore extends Match {
         return isGameFinished;
     }
 
-    public void setWinner(int id) {
-        if (id == firstPlayerId) {
-            super.setWinner(super.getFirstPlayer());
-        } else super.setWinner(super.getSecondPlayer());
+    public void setWinner(long id) {
+        PlayerScore playerScore = getPlayerScoreById(id);
+        playerScore.setWinner();
+        winnerName = playerScore.getPlayerName();
     }
 
     private void resetPoints() {
-        points.clear();
-        points.put(firstPlayerId, 0);
-        points.put(secondPlayerId, 0);
+        firstPlayerScore.resetPoints();
+        secondPlayerScore.resetPoints();
     }
 
     private void resetGames() {
-        games.clear();
-        games.put(firstPlayerId, 0);
-        games.put(secondPlayerId, 0);
+        firstPlayerScore.resetGames();
+        secondPlayerScore.resetGames();
     }
 
-    public String getNormalPoints(int id) {
+    public String getNormalPoints(long id) {
         int index = getPlayerPoints(id);
         Points[] points = Points.values();
         if (index >= 0 && index < points.length) {

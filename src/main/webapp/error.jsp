@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<c:set var="path" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <head>
 	<meta charset="UTF-8">
@@ -24,15 +24,15 @@
 	<section class="nav-header">
 		<div class="brand">
 			<div class="nav-toggle">
-				<img src="${pageContext.request.contextPath}/images/menu.png" alt="Logo" class="logo">
+				<img src="${path}/images/menu.png" alt="Logo" class="logo">
 			</div>
 			<span class="logo-text">TennisScoreboard</span>
 		</div>
 		<div>
 			<nav class="nav-links">
-				<a class="nav-link" href="${pageContext.request.contextPath}/index">Home</a>
-				<a class="nav-link" href="${pageContext.request.contextPath}/new-match">New match</a>
-				<a class="nav-link" href="${pageContext.request.contextPath}/matches">Matches</a>
+				<a class="nav-link" href="${path}/index">Home</a>
+				<a class="nav-link" href="${path}/new-match">New match</a>
+				<a class="nav-link" href="${path}/matches">Matches</a>
 			</nav>
 		</div>
 	</section>
@@ -58,8 +58,9 @@
 </main>
 <footer>
 	<div class="footer">
-		<p>&copy; Tennis Scoreboard, project from <a href="https://zhukovsd.github.io/java-backend-learning-course/">zhukovsd/java-backend-learning-course</a>
-			roadmap.</p>
+		<p>&copy; Tennis Scoreboard, project from
+			<a href="https://zhukovsd.github.io/java-backend-learning-course/">
+				zhukovsd/java-backend-learning-course</a>roadmap.</p>
 	</div>
 </footer>
 </body>

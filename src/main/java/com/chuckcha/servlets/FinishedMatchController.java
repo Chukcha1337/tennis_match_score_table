@@ -33,7 +33,7 @@ public class FinishedMatchController extends HttpServlet {
         validatorService.validateMatchScore(matchScore, uuid);
         req.setAttribute("uuid", uuid);
         req.setAttribute("match", matchScore);
-        req.getRequestDispatcher(JspHelper.getPath("finished-match"))
+        req.getRequestDispatcher("finished-match.jsp")
                 .forward(req, resp);
     }
 

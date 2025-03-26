@@ -36,7 +36,8 @@
         <h1>Welcome to Tennis Scoreboard</h1>
         <p>Manage your tennis matches, record results, and track rankings</p>
 
-        <div class="welcome-image" style="background-image: url('${pageContext.request.contextPath}/images/welcome_image.png');">
+        <div class="welcome-image" style="background-image:
+                url('${pageContext.request.contextPath}/images/welcome_image.png');">
         </div>
         <div class="form-container center">
             <a class="homepage-action-button" href="${pageContext.request.contextPath}/new-match">
@@ -54,7 +55,9 @@
 </main>
 <footer>
     <div class="footer">
-        <p>&copy; Tennis Scoreboard, project from <a href="https://zhukovsd.github.io/java-backend-learning-course/">zhukovsd/java-backend-learning-course</a> roadmap.</p>
+        <p>&copy; Tennis Scoreboard, project from
+            <a href="https://zhukovsd.github.io/java-backend-learning-course/">
+                zhukovsd/java-backend-learning-course</a> roadmap.</p>
     </div>
 </footer>
 </body>

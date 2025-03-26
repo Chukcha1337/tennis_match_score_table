@@ -314,6 +314,12 @@ footer {
     cursor: pointer;
 }
 
+.button-container {
+    display: flex;
+    justify-content: center; /* Центрируем кнопки по горизонтали */
+    gap: 4px; /* Добавляем небольшое расстояние между кнопками (примерно 4 пробела) */
+}
+
 /* Responsive Styles */
 @media (max-width: 992px) {
     .container {

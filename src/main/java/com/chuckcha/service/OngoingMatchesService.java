@@ -1,7 +1,7 @@
 package com.chuckcha.service;
 
+import com.chuckcha.dto.PlayerDto;
 import com.chuckcha.entity.MatchScore;
-import com.chuckcha.entity.Player;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
@@ -9,13 +9,14 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @NoArgsConstructor
-public class OngoingMatchesService implements Service{
+public class OngoingMatchesService {
 
     private final Map<String, MatchScore> currentMatches = new ConcurrentHashMap<>();
 
-    public String createNewMatch(Player firstPlayer, Player secondPlayer) {
+    public String createNewMatch(PlayerDto firstPlayerDto, PlayerDto secondPlayerDto) {
         String uuid = UUID.randomUUID().toString();
-        MatchScore matchScore = new MatchScore(firstPlayer, secondPlayer);
+
+        MatchScore matchScore = new MatchScore(firstPlayerDto, secondPlayerDto);
         currentMatches.put(uuid, matchScore);
         return uuid;
     }

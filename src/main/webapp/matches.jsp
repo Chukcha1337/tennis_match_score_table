@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%--<jsp:useBean id="currentPage" class="com.chuckcha.entity.Page" scope="request"/>--%>
+<c:set var="path" value="${pageContext.request.contextPath}" />
+<c:set var="pageNumber" value="${requestScope.pageNumber}" />
+<c:set var="totalPagesNumber" value="${requestScope.currentPage.pagesNumber()}" />
 <html>
 <head>
 	<meta charset="UTF-8">
@@ -28,8 +30,8 @@
 		</div>
 		<div>
 			<nav class="nav-links">
-				<a class="nav-link" href="${pageContext.request.contextPath}/index">Home</a>
-				<a class="nav-link" href="${pageContext.request.contextPath}/matches">Matches</a>
+				<a class="nav-link" href="${path}/index">Home</a>
+				<a class="nav-link" href="${path}/matches">Matches</a>
 			</nav>
 		</div>
 	</section>
@@ -38,11 +40,11 @@
 	<div class="container">
 		<h1>Matches</h1>
 		<div class="input-container">
-			<form action="${pageContext.request.contextPath}/matches">
+			<form action="${path}/matches">
 				<input class="input-filter" placeholder="Filter by name" name="filter_by_player_name" type="text"/>
 			</form>
 			<div>
-				<a href="${pageContext.request.contextPath}/matches">
+				<a href="${path}/matches">
 					<button class="btn-filter">Reset Filter</button>
 				</a>
 			</div>
@@ -54,11 +56,11 @@
 				<th>Player Two</th>
 				<th>Winner</th>
 			</tr>
-			<c:forEach var="match" items="${requestScope.currentPage.matches}">
+			<c:forEach var="match" items="${requestScope.currentPage.matches()}">
 				<tr>
-					<td>${match.firstPlayer().name}</td>
-					<td>${match.secondPlayer().name}</td>
-					<td><span class="winner-name-td">${match.winner().name}</span></td>
+					<td>${match.firstPlayerName()}</td>
+					<td>${match.secondPlayerName()}</td>
+					<td><span class="winner-name-td">${match.winnerName()}</span></td>
 				</tr>
 			</c:forEach>
 		</table>
@@ -71,24 +73,24 @@
 					<c:set var="filter" value="&filter_by_player_name=${requestScope.name}"/>
 				</c:otherwise>
 			</c:choose>
-			<c:if test="${requestScope.pageNumber > 1}">
-				<c:if test="${requestScope.pageNumber > 2}">
-					<a class="num-page" href="${pageContext.request.contextPath}/matches?page=1${filter}"> first page&nbsp;&nbsp;&nbsp;&nbsp;</a>
+			<c:if test="${pageNumber > 1}">
+				<c:if test="${pageNumber > 2}">
+					<a class="num-page" href="${path}/matches?page=1${filter}"> first page&nbsp;&nbsp;&nbsp;&nbsp;</a>
 				</c:if>
 				<a class="prev"
-				   href="${pageContext.request.contextPath}/matches?page=${requestScope.pageNumber - 1}${filter}"> < </a>
+				   href="${path}/matches?page=${pageNumber - 1}${filter}"> < </a>
 				<a class="num-page"
-				   href="${pageContext.request.contextPath}/matches?page=${requestScope.pageNumber - 1}${filter}">${requestScope.pageNumber - 1}</a>
+				   href="${path}/matches?page=${pageNumber - 1}${filter}">${pageNumber - 1}</a>
 			</c:if>
-			<a class="num-page current">${requestScope.pageNumber}</a>
-			<c:if test="${requestScope.pageNumber < requestScope.currentPage.pagesNumber}">
+			<a class="num-page current">${pageNumber}</a>
+			<c:if test="${pageNumber < totalPagesNumber}">
 				<a class="num-page"
-				   href="${pageContext.request.contextPath}/matches?page=${requestScope.pageNumber + 1}${filter}">${requestScope.pageNumber + 1}</a>
+				   href="${path}/matches?page=${pageNumber + 1}${filter}">${pageNumber + 1}</a>
 				<a class="next"
-				   href="${pageContext.request.contextPath}/matches?page=${requestScope.pageNumber + 1}${filter}"> > </a>
-				<c:if test="${requestScope.pageNumber < requestScope.currentPage.pagesNumber - 1}">
+				   href="${path}/matches?page=${pageNumber + 1}${filter}"> > </a>
+				<c:if test="${pageNumber < totalPagesNumber - 1}">
 					<a class="num-page"
-					   href="${pageContext.request.contextPath}/matches?page=${requestScope.currentPage.pagesNumber}${filter}"> last page </a>
+					   href="${path}/matches?page=${totalPagesNumber}${filter}"> last page </a>
 				</c:if>
 			</c:if>
 		</div>
@@ -96,8 +98,9 @@
 </main>
 <footer>
 	<div class="footer">
-		<p>&copy; Tennis Scoreboard, project from <a href="https://zhukovsd.github.io/java-backend-learning-course/">zhukovsd/java-backend-learning-course</a>
-			roadmap.</p>
+		<p>&copy; Tennis Scoreboard, project from
+			<a href="https://zhukovsd.github.io/java-backend-learning-course/">
+				zhukovsd/java-backend-learning-course</a>roadmap.</p>
 	</div>
 </footer>
 </body>

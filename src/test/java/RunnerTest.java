@@ -1,5 +1,7 @@
+import com.chuckcha.dto.PlayerDto;
 import com.chuckcha.entity.MatchScore;
 import com.chuckcha.entity.Player;
+import com.chuckcha.mapper.DtoMapper;
 import com.chuckcha.service.MatchScoreCalculationService;
 import com.chuckcha.service.ValidatorService;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,29 +23,29 @@ public class RunnerTest {
     private static final String FIRST_PLAYER_ID_STRING = "1";
     private static final String SECOND_PLAYER_ID_STRING = "2";
     private static MatchScore matchScore;
-    private static Player firstPlayer;
-    private static int firstPlayerId;
-    private static Player secondPlayer;
-    private static int secondPlayerId;
+    private static PlayerDto firstPlayerDto;
+    private static long firstPlayerId;
+    private static PlayerDto secondPlayerDto;
+    private static long secondPlayerId;
 
     @BeforeAll
     static void setUpBeforeClass() throws Exception {
         firstPlayerId = Integer.parseInt(FIRST_PLAYER_ID_STRING);
         secondPlayerId = Integer.parseInt(SECOND_PLAYER_ID_STRING);
-        firstPlayer = Player.builder()
+        firstPlayerDto = DtoMapper.toDto(Player.builder()
                 .id(firstPlayerId)
                 .name("firstPlayer")
-                .build();
-        secondPlayer = Player.builder()
+                .build());
+        secondPlayerDto = DtoMapper.toDto(Player.builder()
                 .id(secondPlayerId)
                 .name("secondPlayer")
-                .build();
+                .build());
 
     }
 
     @BeforeEach
     void setUp() throws Exception {
-        matchScore = new MatchScore(firstPlayer, secondPlayer);
+        matchScore = new MatchScore(firstPlayerDto, secondPlayerDto);
     }
 
     @ParameterizedTest
@@ -80,8 +82,8 @@ public class RunnerTest {
     @Test
     void isSetContinueWhenBothPlayersScoreAreEqualGamesToWin() {
         setTieBreak(matchScore);
-        assertThat(matchScore.getPlayerSets(firstPlayer.getId())).isEqualTo(0);
-        assertThat(matchScore.getPlayerSets(secondPlayer.getId())).isEqualTo(0);
+        assertThat(matchScore.getPlayerSets(firstPlayerDto.id())).isEqualTo(0);
+        assertThat(matchScore.getPlayerSets(secondPlayerDto.id())).isEqualTo(0);
         assertThat(matchScore.isTieBreak()).isTrue();
     }
 
@@ -98,8 +100,8 @@ public class RunnerTest {
     void isSetContinueWhenBothPlayersTieBreakPointsEnoughToWin() {
         setTieBreak(matchScore);
         setTieBreakPointsToDraw(matchScore);
-        assertThat(matchScore.getPlayerSets(firstPlayer.getId())).isEqualTo(0);
-        assertThat(matchScore.getPlayerSets(secondPlayer.getId())).isEqualTo(0);
+        assertThat(matchScore.getPlayerSets(firstPlayerDto.id())).isEqualTo(0);
+        assertThat(matchScore.getPlayerSets(firstPlayerDto.id())).isEqualTo(0);
     }
 
     @ParameterizedTest
@@ -149,5 +151,4 @@ public class RunnerTest {
         }
         return FIRST_PLAYER_ID_STRING;
     }
-
 }

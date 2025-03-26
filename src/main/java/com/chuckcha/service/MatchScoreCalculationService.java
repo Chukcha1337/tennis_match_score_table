@@ -3,7 +3,7 @@ package com.chuckcha.service;
 import com.chuckcha.entity.MatchScore;
 import com.chuckcha.exceptions.BadRequestException;
 
-public class MatchScoreCalculationService implements Service {
+public class MatchScoreCalculationService {
 
     private static final int SETS_TO_WIN = 2;
     private static final int GAMES_TO_WIN = 6;
@@ -15,19 +15,19 @@ public class MatchScoreCalculationService implements Service {
     }
 
     public void updateScore(MatchScore matchScore, String pointWinnerIdString) {
-        int pointWinnerId;
+        long pointWinnerId;
         try {
-            pointWinnerId = Integer.parseInt(pointWinnerIdString);
+            pointWinnerId = Long.parseLong(pointWinnerIdString);
         } catch (NumberFormatException e) {
             throw new BadRequestException("Invalid id: " + pointWinnerIdString);
         }
-        int pointLoserId = matchScore.getOpponentId(pointWinnerId);
+        long pointLoserId = matchScore.getOpponentId(pointWinnerId);
         if (matchScore.isTieBreak()) {
             calculateIfTieBrake(matchScore, pointWinnerId, pointLoserId);
         } else calculateIfNoTieBrake(matchScore, pointWinnerId, pointLoserId);
     }
 
-    private void calculateIfTieBrake(MatchScore matchScore, int pointWinnerId, int pointLoserId) {
+    private void calculateIfTieBrake(MatchScore matchScore, long pointWinnerId, long pointLoserId) {
         matchScore.incrementPoints(pointWinnerId);
         int winnerPoints = matchScore.getPlayerPoints(pointWinnerId);
         int loserPoints = matchScore.getPlayerPoints(pointLoserId);
@@ -40,7 +40,7 @@ public class MatchScoreCalculationService implements Service {
         }
     }
 
-    private void calculateSets(MatchScore matchScore, int pointWinnerId) {
+    private void calculateSets(MatchScore matchScore, long pointWinnerId) {
         matchScore.incrementSets(pointWinnerId);
         int winnerSets = matchScore.getPlayerSets(pointWinnerId);
         if (winnerSets == SETS_TO_WIN) {
@@ -49,7 +49,7 @@ public class MatchScoreCalculationService implements Service {
         }
     }
 
-    private void calculateIfNoTieBrake(MatchScore matchScore, int pointWinnerId, int pointLoserId) {
+    private void calculateIfNoTieBrake(MatchScore matchScore, long pointWinnerId, long pointLoserId) {
         matchScore.incrementPoints(pointWinnerId);
         int winnerPoints = matchScore.getPlayerPoints(pointWinnerId);
         int loserPoints = matchScore.getPlayerPoints(pointLoserId);
@@ -87,15 +87,19 @@ public class MatchScoreCalculationService implements Service {
     public int getSetsToWin() {
         return SETS_TO_WIN;
     }
+
     public int getTieBreakPointsToWin() {
         return TIE_BREAK_POINTS_TO_WIN;
     }
+
     public int getGamesToWin() {
         return GAMES_TO_WIN;
     }
+
     public int getPointsToWin() {
         return POINTS_TO_WIN;
     }
+
     public int getMinDifference() {
         return MIN_DIFFERENCE;
     }

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%--<jsp:useBean id="match" class="com.chuckcha.entity.MatchScore" scope="request"/>--%>
+<c:set var="match" value="${requestScope.match}" />
+<c:set var="path" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
@@ -20,14 +21,14 @@
     <section class="nav-header">
         <div class="brand">
             <div class="nav-toggle">
-                <img src="${pageContext.request.contextPath}/images/menu.png" alt="Logo" class="logo">
+                <img src="${path}/images/menu.png" alt="Logo" class="logo">
             </div>
             <span class="logo-text">TennisScoreboard</span>
         </div>
         <div>
             <nav class="nav-links">
-                <a class="nav-link" href="${pageContext.request.contextPath}/index">Home</a>
-                <a class="nav-link" href="${pageContext.request.contextPath}/matches">Matches</a>
+                <a class="nav-link" href="${path}/index">Home</a>
+                <a class="nav-link" href="${path}/matches">Matches</a>
             </nav>
         </div>
     </section>
@@ -35,12 +36,12 @@
 <main>
     <div class="container">
         <h1>Current match</h1>
-        <c:if test="${requestScope.match.tieBreak == true}">
-            <div class="current-match-image" style="background-image: url('${pageContext.request.contextPath}/images/frame_matches_tiebreak.png');">
+        <c:if test="${match.tieBreak == true}">
+            <div class="current-match-image" style="background-image: url('${path}/images/frame_matches_tiebreak.png');">
             </div>
         </c:if>
-        <c:if test="${requestScope.match.tieBreak == false}">
-        <div class="current-match-image" style="background-image: url('${pageContext.request.contextPath}/images/frame_matches.png');">
+        <c:if test="${match.tieBreak == false}">
+        <div class="current-match-image" style="background-image: url('${path}/images/frame_matches.png');">
         </div>
         </c:if>
         <section class="score">
@@ -55,19 +56,19 @@
                 </thead>
                 <tbody>
                 <tr class="player1">
-                    <td class="table-text">${requestScope.match.firstPlayer.name}</td>
-                    <td class="table-text">${requestScope.match.getPlayerSets(requestScope.match.firstPlayer.id)}</td>
-                    <td class="table-text">${requestScope.match.getPlayerGames(requestScope.match.firstPlayer.id)}</td>
-                    <c:if test="${requestScope.match.tieBreak == true}">
-                        <td class="table-text">${requestScope.match.getPlayerPoints(requestScope.match.firstPlayer.id)}</td>
+                    <td class="table-text">${match.firstPlayerScore.playerName}</td>
+                    <td class="table-text">${match.getPlayerSets(match.firstPlayerId)}</td>
+                    <td class="table-text">${match.getPlayerGames(match.firstPlayerId)}</td>
+                    <c:if test="${match.tieBreak == true}">
+                        <td class="table-text">${match.getPlayerPoints(match.firstPlayerId)}</td>
                     </c:if>
-                    <c:if test="${requestScope.match.tieBreak == false}">
-                        <td class="table-text">${requestScope.match.getNormalPoints(requestScope.match.firstPlayer.id)}</td>
+                    <c:if test="${match.tieBreak == false}">
+                        <td class="table-text">${match.getNormalPoints(match.firstPlayerId)}</td>
                     </c:if>
                     <td class="table-text">
-						<c:if test="${empty requestScope.match.winner}">
-                        	<form action="${pageContext.request.contextPath}/match-score" method="post">
-                            <input type="hidden" name="pointWinnerId" value="${requestScope.match.firstPlayer.id}">
+						<c:if test="${match.gameFinished == false}">
+                        	<form action="${path}/match-score" method="post">
+                            <input type="hidden" name="pointWinnerId" value="${match.firstPlayerId}">
                             <input type="hidden" name="uuid" value="${requestScope.uuid}">
                             <button type="submit" class="score-btn">Score</button>
                         	</form>
@@ -75,19 +76,19 @@
                     </td>
                 </tr>
                 <tr class="player2">
-                    <td class="table-text">${requestScope.match.secondPlayer.name}</td>
-                    <td class="table-text">${requestScope.match.getPlayerSets(requestScope.match.secondPlayer.id)}</td>
-                    <td class="table-text">${requestScope.match.getPlayerGames(requestScope.match.secondPlayer.id)}</td>
-                    <c:if test="${requestScope.match.tieBreak == true}">
-                        <td class="table-text">${requestScope.match.getPlayerPoints(requestScope.match.secondPlayer.id)}</td>
+                    <td class="table-text">${match.secondPlayerScore.playerName}</td>
+                    <td class="table-text">${match.getPlayerSets(match.secondPlayerId)}</td>
+                    <td class="table-text">${match.getPlayerGames(match.secondPlayerId)}</td>
+                    <c:if test="${match.tieBreak == true}">
+                        <td class="table-text">${match.getPlayerPoints(match.secondPlayerId)}</td>
                     </c:if>
-                    <c:if test="${requestScope.match.tieBreak == false}">
-                        <td class="table-text">${requestScope.match.getNormalPoints(requestScope.match.secondPlayer.id)}</td>
+                    <c:if test="${match.tieBreak == false}">
+                        <td class="table-text">${match.getNormalPoints(match.secondPlayerId)}</td>
                     </c:if>
                     <td class="table-text">
-						<c:if test="${empty requestScope.match.winner}">
-                        	<form action="${pageContext.request.contextPath}/match-score" method="post">
-                            <input type="hidden" name="pointWinnerId" value="${requestScope.match.secondPlayer.id}">
+						<c:if test="${match.gameFinished == false}">
+                        	<form action="${path}/match-score" method="post">
+                            <input type="hidden" name="pointWinnerId" value="${match.secondPlayerId}">
                             <input type="hidden" name="uuid" value="${requestScope.uuid}">
                             <button type="submit" class="score-btn">Score</button>
                         	</form>
@@ -97,22 +98,16 @@
                 </tbody>
             </table>
         </section>
-        <c:if test="${requestScope.match.tieBreak == true}">
+        <c:if test="${match.tieBreak == true}">
             <h1 style="text-align: center;">TieBreak</h1>
         </c:if>
-<%--        <c:if test="${not empty requestScope.match.winner}">--%>
-<%--            <h2>Match is finished!</h2>--%>
-<%--            <h3>Winner of match: ${requestScope.match.winner.name}</h3>--%>
-<%--			<form action="${pageContext.request.contextPath}/finished-match.jsp" method="post">--%>
-<%--				<input type="hidden" name="uuid" value="${requestScope.uuid}">--%>
-<%--				<button type="submit" class="score-btn">Main menu</button>--%>
-<%--			</form>--%>
-<%--		</c:if>--%>
     </div>
 </main>
 <footer>
     <div class="footer">
-        <p>&copy; Tennis Scoreboard, project from <a href="https://zhukovsd.github.io/java-backend-learning-course/">zhukovsd/java-backend-learning-course</a> roadmap.</p>
+        <p>&copy; Tennis Scoreboard, project from
+            <a href="https://zhukovsd.github.io/java-backend-learning-course/">
+                zhukovsd/java-backend-learning-course</a> roadmap.</p>
     </div>
 </footer>
 </body>

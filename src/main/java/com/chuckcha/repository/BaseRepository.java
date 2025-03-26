@@ -42,11 +42,9 @@ public class BaseRepository<E> {
             TypedQuery<E> query = entityManager.createQuery(params.getQuery(), params.getClazz());
             params.getParameters().forEach(query::setParameter);
             query.setFirstResult(params.getOffset()).setMaxResults(params.getPageSize());
-
             if (params.getGraphName() != null) {
                 query.setHint(GraphSemantic.LOAD.getJakartaHintName(), entityManager.getEntityGraph(params.getGraphName()));
             }
-
             return query.getResultList();
         } catch (HibernateException e) {
             throw new DatabaseException("Database error!");
@@ -62,5 +60,4 @@ public class BaseRepository<E> {
             throw new DatabaseException("Database error!");
         }
     }
-
 }

@@ -1,7 +1,6 @@
 package com.chuckcha.servlets;
 
-import com.chuckcha.entity.MatchScore;
-import com.chuckcha.entity.Player;
+import com.chuckcha.dto.PlayerDto;
 import com.chuckcha.exceptions.ValidationException;
 import com.chuckcha.service.OngoingMatchesService;
 import com.chuckcha.service.PlayerService;
@@ -33,7 +32,7 @@ public class NewMatchServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher(JspHelper.getPath("new-match"))
+        req.getRequestDispatcher("new-match.jsp")
                 .forward(req, resp);
     }
 
@@ -43,14 +42,14 @@ public class NewMatchServlet extends HttpServlet {
         String secondPlayerName = req.getParameter("player2");
         try {
             validatorService.validatePlayersNames(List.of(firstPlayerName, secondPlayerName));
-            List<Player> players = playerService.checkOrCreatePlayers(firstPlayerName, secondPlayerName);
-            Player firstPlayer = players.getFirst();
-            Player secondPlayer = players.getLast();
-            String uuid = ongoingMatchesService.createNewMatch(firstPlayer, secondPlayer);
+            List<PlayerDto> playerDtoes = playerService.checkOrCreatePlayers(firstPlayerName, secondPlayerName);
+            PlayerDto firstPlayerDto = playerDtoes.getFirst();
+            PlayerDto secondPlayerDto = playerDtoes.getLast();
+            String uuid = ongoingMatchesService.createNewMatch(firstPlayerDto, secondPlayerDto);
             resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + uuid);
         } catch (ValidationException e) {
             req.setAttribute("errors", e.getErrors());
-            req.getRequestDispatcher(JspHelper.getPath("new-match")).forward(req, resp);
+            req.getRequestDispatcher("new-match.jsp").forward(req, resp);
         }
     }
 }

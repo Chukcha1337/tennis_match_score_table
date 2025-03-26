@@ -1,15 +1,15 @@
 INSERT INTO players (name) VALUES ('Иван Иванович');
 INSERT INTO players (name) VALUES ('Дмитрий Угоров');
 INSERT INTO players (name) VALUES ('Евгений Поросюк');
-INSERT INTO players (name) VALUES ('Эван Джокович');
+INSERT INTO players (name) VALUES ('Слабый Игрок');
 INSERT INTO players (name) VALUES ('Евгений Силач');
 INSERT INTO players (name) VALUES ('Синее Ведро');
 INSERT INTO players (name) VALUES ('Копатель Онлайн');
-INSERT INTO players (name) VALUES ('Мужчина С Ракеткой');
+INSERT INTO players (name) VALUES ('Мужчина');
 INSERT INTO players (name) VALUES ('Опасный Бандит');
-INSERT INTO players (name) VALUES ('Ракетка');
-INSERT INTO players (name) VALUES ('Мяч');
-INSERT INTO players (name) VALUES ('Я');
+INSERT INTO players (name) VALUES ('Мурило Бенисио');
+INSERT INTO players (name) VALUES ('Джована Антонелли');
+INSERT INTO players (name) VALUES ('Вера Фишер');
 INSERT INTO players (name) VALUES ('Элли Тотошкина');
 
 INSERT INTO matches (player1, player2, winner) VALUES (1, 2, 2);

@@ -20,7 +20,7 @@ public class ExceptionHandlerFilter extends HttpFilter {
             super.doFilter(req, resp, chain);
         } catch (Throwable throwable) {
             ExceptionHandler.handleExceptions(req, throwable);
-            req.getRequestDispatcher(JspHelper.getPath("error")).forward(req, resp);
+            req.getRequestDispatcher("error.jsp").forward(req, resp);
         }
     }
 }

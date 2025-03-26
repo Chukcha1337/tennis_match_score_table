@@ -3,7 +3,6 @@ package com.chuckcha.exceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 public final class ExceptionHandler {
@@ -11,7 +10,7 @@ public final class ExceptionHandler {
     private ExceptionHandler() {
     }
 
-    public static void handleExceptions(HttpServletRequest req, Throwable throwable) throws IOException {
+    public static void handleExceptions(HttpServletRequest req, Throwable throwable) {
         int status = getStatusCode(throwable);
         req.setAttribute("errorName", throwable.getClass().getSimpleName());
         req.setAttribute("status", status);
@@ -26,5 +25,4 @@ public final class ExceptionHandler {
             default -> HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         };
     }
-
 }

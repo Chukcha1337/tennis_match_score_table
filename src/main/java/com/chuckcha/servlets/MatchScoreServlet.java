@@ -36,12 +36,12 @@ public class MatchScoreServlet extends HttpServlet {
         validatorService.validateMatchScore(matchScore, uuid);
         req.setAttribute("uuid", uuid);
         req.setAttribute("match", matchScore);
-        req.getRequestDispatcher(JspHelper.getPath("match-score"))
+        req.getRequestDispatcher("match-score.jsp")
                 .forward(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pointWinnerId = req.getParameter("pointWinnerId");
         String uuid = req.getParameter("uuid");
         validatorService.validateUUID(uuid);

@@ -36,7 +36,7 @@ public class MatchesServlet extends HttpServlet {
         req.setAttribute("pageNumber", pageNumber);
         req.setAttribute("currentPage", currentPage);
         req.setAttribute("rows", DEFAULT_PAGE_SIZE);
-        req.getRequestDispatcher(JspHelper.getPath("matches"))
+        req.getRequestDispatcher("matches.jsp")
                 .forward(req, resp);
     }
 }

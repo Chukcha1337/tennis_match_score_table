@@ -5,23 +5,24 @@ import lombok.*;
 
 @NamedEntityGraph(name = "WithPlayers",
         attributeNodes = {
-        @NamedAttributeNode("firstPlayer"),
-        @NamedAttributeNode("secondPlayer"),
-        @NamedAttributeNode("winner")
+                @NamedAttributeNode("firstPlayer"),
+                @NamedAttributeNode("secondPlayer"),
+                @NamedAttributeNode("winner")
         }
 )
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"firstPlayer", "secondPlayer", "winner"})
 @Builder
 @Table(name = "matches", schema = "public")
 @Entity
-public class Match implements BaseEntity<Integer> {
+public class Match implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Player1")
@@ -34,9 +35,4 @@ public class Match implements BaseEntity<Integer> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Winner")
     private Player winner;
-
-    public Match(Player firstPlayer, Player secondPlayer) {
-        this.firstPlayer = firstPlayer;
-        this.secondPlayer = secondPlayer;
-    }
 }

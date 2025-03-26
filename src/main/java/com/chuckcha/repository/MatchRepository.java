@@ -8,13 +8,27 @@ import java.util.Map;
 
 public class MatchRepository extends BaseRepository<Match> {
 
+    private static final String FIND_PAGINATED_HQL = "select m from Match m order by m.id desc";
+    private static final String FIND_BY_NAME_PAGINATED_HQL = """
+            select m from Match m 
+            where lower(m.firstPlayer.name) like lower(:name)
+            or lower(m.secondPlayer.name) like lower(:name)
+            order by m.id desc
+            """;
+    private static final String GET_ALL_MATCHES_AMOUNT_HQL = "select count(m) from Match m";
+    private static final String GET_MATCHES_AMOUNT_BY_NAME_HQL = """
+            select count(m) from Match m 
+            where lower(m.firstPlayer.name) like lower(:name)
+            or lower(m.secondPlayer.name) like lower(:name)
+            """;
+
     public MatchRepository(EntityManager entityManager) {
         super(entityManager);
     }
 
     public List<Match> findPaginated(int offset, int pageSize) {
         return findResultList(QueryBuilder.<Match>builder()
-                .query("select m from Match m order by m.id desc")
+                .query(FIND_PAGINATED_HQL)
                 .clazz(Match.class)
                 .offset(offset)
                 .pageSize(pageSize)
@@ -24,8 +38,7 @@ public class MatchRepository extends BaseRepository<Match> {
 
     public List<Match> findByNamePaginated(String name, int offset, int pageSize) {
         return findResultList(QueryBuilder.<Match>builder()
-                .query("select m from Match m where lower(m.firstPlayer.name) like lower(:name) " +
-                       "or lower(m.secondPlayer.name) like lower(:name) order by m.id desc")
+                .query(FIND_BY_NAME_PAGINATED_HQL)
                 .clazz(Match.class)
                 .parameters(Map.of("name", "%" + name + "%"))
                 .offset(offset)
@@ -36,18 +49,16 @@ public class MatchRepository extends BaseRepository<Match> {
 
     public Long getRowsAmount() {
         return getCount(QueryBuilder.<Long>builder()
-                .query("select count(m) from Match m")
+                .query(GET_ALL_MATCHES_AMOUNT_HQL)
                 .build()
         );
     }
 
     public Long getRowsAmount(String name) {
         return getCount(QueryBuilder.<Long>builder()
-                .query("select count(m) from Match m where lower(m.firstPlayer.name) like lower(:name) " +
-                       "or lower(m.secondPlayer.name) like lower(:name)")
+                .query(GET_MATCHES_AMOUNT_BY_NAME_HQL)
                 .parameters(Map.of("name", "%" + name + "%"))
                 .build());
-
     }
 }
 
